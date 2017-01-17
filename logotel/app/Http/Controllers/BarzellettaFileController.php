@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\BarzellettaInterface as BarzellettaInterface;
+
 use File;
 
-class BarzellettaController
+class BarzellettaFileController implements BarzellettaInterface
 {
 
     const FILECONST = 'barzellette.csv';
@@ -23,10 +25,8 @@ class BarzellettaController
             case '':
                 return self::getBarzelletta();
             case 'aggiungi':
-                /*if(self::updateBarzelletta($params))
+                if(self::updateBarzelletta($params))
                     return 'barzelletta aggiunta';
-                */
-                return $params;
             case 'rimuovi':
                 if(self::destroyBarzelletta())
                     return 'barzelletta rimossa';
@@ -35,18 +35,18 @@ class BarzellettaController
         }
     }
 
-    private function getList()
+    function getList()
     {
         $lista = self::exploreFile();
         echo json_encode($lista);
     }
 
-    private function getBarzelletta(){
+    function getBarzelletta(){
         $lista = self::exploreFile();
         echo json_encode($lista[mt_rand(0,count($lista)-1)]);
     }
 
-    private function updateBarzelletta($barzelletta){
+    function updateBarzelletta($barzelletta){
 
         $contents = File::get(self::FILECONST);
         $contents .="\r\n".$barzelletta[1].','.$barzelletta[3];
@@ -57,7 +57,7 @@ class BarzellettaController
         }
     }
 
-    private function destroyBarzelletta(){
+    function destroyBarzelletta(){
         $contents = File::get(self::FILECONST);
         $riga = explode("\r\n", $contents);
         array_pop($riga);
@@ -69,7 +69,7 @@ class BarzellettaController
         }
     }
 
-    private function exploreFile(){
+    function exploreFile(){
         $contents = File::get(self::FILECONST);
         $righe = explode("\r\n", $contents);
         foreach($righe as $key => $riga){

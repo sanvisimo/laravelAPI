@@ -62,7 +62,7 @@ class BotController extends Controller
         if($data->password == '12345'){
             switch($alfred[1]) {
                 case 'barzelletta':
-                    $report = new BarzellettaController();
+                    $report = new BarzellettaFileController();
                     return $report->check($comando, $parametri);
             }
         }else{
