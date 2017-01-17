@@ -17,11 +17,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
-Route::post('bot', function()
+/*Route::post('bot', function()
 {
     return array(
         1 => "John",
         2 => "Mary",
         3 => "Steven"
     );
-});
+}); */
+
+Route::resource('bot','Botcontroller');
+
+

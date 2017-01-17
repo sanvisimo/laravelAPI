@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class AlfredController extends Controller
+class BotController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,6 +14,11 @@ class AlfredController extends Controller
     public function index()
     {
         //
+        return array(
+            1 => "John",
+            2 => "Mary",
+            3 => "Steven"
+        );
     }
 
     /**
@@ -34,7 +39,35 @@ class AlfredController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = (object) $request->json()->all();
+
+        $parametri = explode('"',$request->message);
+        $alfred = explode(" ",$parametri[0]);
+        $spaces = substr_count($parametri[0]," ")+1;
+
+        if($spaces  == count($alfred)){
+            if($alfred[0] !==  "@alfred"){
+                return;
+            }else{
+                if(isset($alfred[2])){
+                    $comando = $alfred[2];
+                }else{
+                    $comando = '';
+                }
+            }
+        }else{
+            return;
+        }
+
+        if($data->password == '12345'){
+            switch($alfred[1]) {
+                case 'barzelletta':
+                    $report = new BarzellettaController();
+                    return $report->check($comando, $parametri);
+            }
+        }else{
+            return;
+        }
     }
 
     /**
@@ -46,6 +79,7 @@ class AlfredController extends Controller
     public function show($id)
     {
         //
+
     }
 
     /**
