@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Barzelletta;
+use App\Autore;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BarzellettaInterface as BarzellettaInterface;
-
-use File;
 
 class BarzellettaDbController implements BarzellettaInterface
 {
@@ -23,11 +23,11 @@ class BarzellettaDbController implements BarzellettaInterface
             case '':
                 return self::getBarzelletta();
             case 'aggiungi':
-                if(self::updateBarzelletta($params))
-                    return 'barzelletta aggiunta';
+                return self::updateBarzelletta($params);
             case 'rimuovi':
-                if(self::destroyBarzelletta())
+                if(self::destroyBarzelletta()) {
                     return 'barzelletta rimossa';
+                }
             case 'lista':
                 return self::getList();
         }
@@ -35,47 +35,54 @@ class BarzellettaDbController implements BarzellettaInterface
 
     function getList()
     {
-        $lista = self::exploreFile();
+        $lista = self::fetchBarzellette();
         echo json_encode($lista);
     }
 
     function getBarzelletta(){
-        $lista = self::exploreFile();
-        echo json_encode($lista[mt_rand(0,count($lista)-1)]);
+        $lista = self::fetchBarzellette();
+
+        $random = mt_rand(0,count($lista)-1);
+        /*Barzelletta::where('id', $random)
+            ->update([
+                'visualizzazioni' => 'visualizzazioni + 1'
+            ]);*/
+        echo json_encode($lista[$random]);
     }
 
     function updateBarzelletta($barzelletta){
 
-        $contents = File::get(self::FILECONST);
-        $contents .="\r\n".$barzelletta[1].';'.$barzelletta[3];
-        $bytes_written = File::put(self::FILECONST, $contents);
-        if ($bytes_written !== false)
-        {
-            return true;
+        $autore = Autore::where('autore','=',$barzelletta[3])->first();
+
+        if($autore) {
+            $autore_id = $autore->id;
+        }else{
+            $autore = Autore::create([
+                'autore' => $barzelletta[3]
+            ]);
+            $autore_id = $autore->id;
         }
+
+        Barzelletta::create([
+            'barzelletta' => $barzelletta[1],
+            'autores_id' => $autore_id
+        ]);
+
+        return 'barzelletta aggiunta';
     }
 
     function destroyBarzelletta(){
-        $contents = File::get(self::FILECONST);
-        $riga = explode("\r\n", $contents);
-        array_pop($riga);
-        $contenuto = implode("\r\n",$riga);
-        $bytes_written = File::put(self::FILECONST, $contenuto);
-        if ($bytes_written !== false)
-        {
+        if(Barzelletta::orderBy('created_at', 'desc')->first()->delete()){
             return true;
         }
     }
 
-    function exploreFile(){
-        $contents = File::get(self::FILECONST);
-        $righe = explode("\r\n", $contents);
-        foreach($righe as $key => $riga){
-            $linea = explode(';',$riga);
-            $export[$key] = $linea[0];
-            if(!empty($linea[1]))
-                $export[$key] .=' - Autore: '.$linea[1];
+    function fetchBarzellette(){
+        $result = array();
+        $barzellette = Barzelletta::with('autores')->get();
+        foreach ($barzellette as $barzelletta){
+            array_push($result,$barzelletta->barzelletta.' - Autore: '.$barzelletta->autores['autore']);
         }
-        return $export;
+        return $result;
     }
 }

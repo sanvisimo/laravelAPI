@@ -23,6 +23,7 @@ class BarzellettaSetup extends Migration
             $table->increments('id');
             $table->string('barzelletta');
             $table->integer('autore_id')->unsigned()->index();
+            $table->integer('visualizzazioni');
             $table->timestamps();
         });
 

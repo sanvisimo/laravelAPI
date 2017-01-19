@@ -45,6 +45,15 @@ class BotController extends Controller
         $alfred = explode(" ",$parametri[0]);
         $spaces = substr_count($parametri[0]," ")+1;
 
+        switch($request->storage) {
+            case 'file':
+                $report = new BarzellettaFileController();
+                break;
+            case 'database':
+                $report = new BarzellettaDbController();
+                break;
+        }
+
         if($spaces  == count($alfred)){
             if($alfred[0] !==  "@alfred"){
                 return;
@@ -62,7 +71,7 @@ class BotController extends Controller
         if($data->password == '12345'){
             switch($alfred[1]) {
                 case 'barzelletta':
-                    $report = new BarzellettaFileController();
+
                     return $report->check($comando, $parametri);
             }
         }else{

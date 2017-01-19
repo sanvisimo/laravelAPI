@@ -22,5 +22,5 @@ Interface BarzellettaInterface
 
     function destroyBarzelletta();
 
-    function exploreFile();
+    function fetchBarzellette();
 }

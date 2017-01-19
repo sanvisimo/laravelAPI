@@ -37,12 +37,12 @@ class BarzellettaFileController implements BarzellettaInterface
 
     function getList()
     {
-        $lista = self::exploreFile();
+        $lista = self::fetchBarzellette();
         echo json_encode($lista);
     }
 
     function getBarzelletta(){
-        $lista = self::exploreFile();
+        $lista = self::fetchBarzellette();
         echo json_encode($lista[mt_rand(0,count($lista)-1)]);
     }
 
@@ -69,7 +69,7 @@ class BarzellettaFileController implements BarzellettaInterface
         }
     }
 
-    function exploreFile(){
+    function fetchBarzellette(){
         $contents = File::get(self::FILECONST);
         $righe = explode("\r\n", $contents);
         foreach($righe as $key => $riga){
