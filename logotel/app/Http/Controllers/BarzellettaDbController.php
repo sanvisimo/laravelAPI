@@ -7,10 +7,8 @@ use App\Http\Controllers\BarzellettaInterface as BarzellettaInterface;
 
 use File;
 
-class BarzellettaFileController implements BarzellettaInterface
+class BarzellettaDbController implements BarzellettaInterface
 {
-
-    const FILECONST = 'barzellette.csv';
 
     /**
      * Store a newly created resource in storage.
@@ -31,7 +29,7 @@ class BarzellettaFileController implements BarzellettaInterface
                 if(self::destroyBarzelletta())
                     return 'barzelletta rimossa';
             case 'lista':
-               return self::getList();
+                return self::getList();
         }
     }
 
